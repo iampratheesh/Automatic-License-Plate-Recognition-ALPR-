@@ -23,5 +23,12 @@ img = cv2.rectangle(img, tl, br, (0,255,0), 7)
 img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 
+x1,y1 = tl
+x2,y2 = br
+license_plate = img[y1:y2, x1:x2]
+
 plt.imshow(img)
+plt.show()
+
+plt.imshow(license_plate)
 plt.show()
