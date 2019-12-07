@@ -5,6 +5,9 @@
 # Weight files
 bin/
 
+#Output images
+static/images/*
+
 # Sample image data
 !sample_img/sample_*.jpg
 sample_img/out/*
