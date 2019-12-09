@@ -7,6 +7,7 @@ bin/
 
 #Output images
 static/images/*
+static/output/*
 
 # Sample image data
 !sample_img/sample_*.jpg
