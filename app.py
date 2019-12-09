@@ -30,10 +30,22 @@ def save_picture(form_picture):
     _, f_ext = os.path.splitext(form_picture.filename)
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/images', picture_fn)
+    print(picture_path)
     i = Image.open(form_picture)
     i.save(picture_path)
     return picture_fn
 
+def save_output(image_array):
+	PIL_image = Image.fromarray(image_array)
+	random_hex = secrets.token_hex(8)
+	f_ext = ".jpg"
+	picture_fn = random_hex + f_ext
+	picture_path = os.path.join(app.root_path, 'static/output', picture_fn)
+	print(picture_fn, picture_path)
+	
+	PIL_image.save(picture_path , 'JPEG')
+	return picture_fn
+	
 @app.route('/', methods = ['GET','POST'])
 def home():
 	form = ImageForm()
@@ -48,7 +60,7 @@ def home():
 			br = (result[0]['bottomright']['x'], result[0]['bottomright']['y'])
 			label = result[0]['label']
 			confidence = result[0]['confidence']
-			print(result)
+
 			img = cv2.rectangle(img, tl, br, (0,255,0), 7)
 			img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 			img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
@@ -56,12 +68,14 @@ def home():
 			x1,y1 = tl
 			x2,y2 = br
 			license_plate = img[y1:y2, x1:x2]
-			print(type(img), type(license_plate))
-			img = Image.fromarray(img)
-			license_plate = Image.fromarray(license_plate)
-			print(type(img), type(license_plate))
+
+			img_name = save_output(img)
+			license_plate_name = save_output(license_plate)
+			
+			img_path = url_for('static', filename='output/' + img_name)
+			license_plate_path = url_for('static', filename='output/' + license_plate_name)
 			#text = pytesseract.image_to_string(license_plate)
-			return render_template('output.html', img=img, license_plate=license_plate) #text=text)
+			return render_template('output.html', img=img_path, license_plate=license_plate_path) #text=text)
 	return render_template('index.html', form=form)
 
 if __name__ == '__main__':
