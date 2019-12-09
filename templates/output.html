@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
     <h1>Here's what we found</h1>
-    <img src="{{img}}" alt="Italian Trulli">
-    <img src="{{img}}" alt="Italian Trulli">
+    <h3>Your Image</h3>
+    <img src="{{img}}" alt="Error Loading Image">
+    <h3>Detected Number Plate</h3>
+    <img src="{{license_plate}}" alt="Error Loading Image">
     <h3>Image to Text: {{text}}</h3>
 {% endblock content %}
