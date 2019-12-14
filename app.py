@@ -63,9 +63,9 @@ def home():
 			x2,y2 = br
 			license_plate = img[y1:y2, x1:x2]
 
-			img = cv2.rectangle(img, tl, br, (0,255,0), 7)
-			img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
-			img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+			#img = cv2.rectangle(img, tl, br, (0,255,0), 7)
+			#img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+			#img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 
 			img_name = save_output(img)
 			license_plate_name = save_output(license_plate)
@@ -75,11 +75,12 @@ def home():
 
 			image = cv2.imread(os.path.join(app.root_path, 'static/output', license_plate_name))
 			gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-			gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+			gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+			gray = cv2.medianBlur(gray, 3)
 			filename = "{}.png".format(os.getpid())
 			cv2.imwrite(filename, gray)
 			text = pytesseract.image_to_string(Image.open(filename))
-			os.remove(filename)
+			#os.remove(filename)
 			print(text)
 
 			return render_template('output.html', img=img_path, license_plate=license_plate_path, text=text)
