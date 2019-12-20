@@ -2,8 +2,12 @@
 {% block content %}
     <h1>Here's what we found</h1>
     <h3>Your Image</h3>
-    <img src="{{img}}" alt="Error Loading Image">
+    <img src="{{img_path}}" alt="Error Loading Image">
     <h3>Detected Number Plate</h3>
-    <img src="{{license_plate}}" alt="Error Loading Image">
-    <h3>Image to Text: {{text}}</h3>
+    {% for license_plate in license_plate_lst %}
+    	<img src="{{license_plate}}" alt="Error Loading Image">
+    {% endfor %}
+    {% for text in text_lst %}
+    	<h3>Image to Text: {{text}}</h3>
+    {% endfor %}
 {% endblock content %}

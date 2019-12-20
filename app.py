@@ -63,38 +63,41 @@ def home():
 			picture_file = save_picture(form.picture.data)
 			img = img = cv2.imread(os.path.join(app.root_path, 'static/images', picture_file), cv2.IMREAD_COLOR)
 			img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-			result = tfnet.return_predict(img)
-
-			tl = (result[0]['topleft']['x'], result[0]['topleft']['y'])
-			br = (result[0]['bottomright']['x'], result[0]['bottomright']['y'])
-			label = result[0]['label']
-			confidence = result[0]['confidence']
-			
-			x1,y1 = tl
-			x2,y2 = br
-			license_plate = img[y1:y2, x1:x2]
-
-			#img = cv2.rectangle(img, tl, br, (0,255,0), 7)
-			#img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
-			#img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
-
+			results = tfnet.return_predict(img)
 			img_name = save_output(img)
-			license_plate_name = save_output(license_plate)
-			
 			img_path = url_for('static', filename='output/' + img_name)
-			license_plate_path = url_for('static', filename='output/' + license_plate_name)
+			license_plate_lst = []
+			text_lst = []
+			for result in results:
+				print(result)
+				tl = (result['topleft']['x'], result['topleft']['y'])
+				br = (result['bottomright']['x'], result['bottomright']['y'])
+				label = result['label']
+				confidence = result['confidence']
+				
+				x1,y1 = tl
+				x2,y2 = br
+				license_plate = img[y1:y2, x1:x2]
 
-			image = cv2.imread(os.path.join(app.root_path, 'static/output', license_plate_name))
-			gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-			gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
-			gray = cv2.medianBlur(gray, 3)
-			filename = "{}.png".format(os.getpid())
-			cv2.imwrite(filename, gray)
-			text = pytesseract.image_to_string(Image.open(filename))
-			#os.remove(filename)
-			print(text)
+				#img = cv2.rectangle(img, tl, br, (0,255,0), 7)
+				#img = cv2.putText(img, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+				#img = cv2.putText(img, str(confidence), br, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 
-			return render_template('output.html', img=img_path, license_plate=license_plate_path, text=text)
+				license_plate_name = save_output(license_plate)
+				license_plate_path = url_for('static', filename='output/' + license_plate_name)
+				license_plate_lst.append(license_plate_path)
+
+				image = cv2.imread(os.path.join(app.root_path, 'static/output', license_plate_name))
+				gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+				gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
+				gray = cv2.medianBlur(gray, 3)
+				filename = "{}.png".format(os.getpid())
+				cv2.imwrite(filename, gray)
+				text = pytesseract.image_to_string(Image.open(filename))
+				text_lst.append(text)
+				os.remove(filename)
+
+			return render_template('output.html', img_path=img_path, license_plate_lst=license_plate_lst, text_lst=text_lst)
 	path = os.path.join(app.root_path, 'static/output')
 	remove_files(path)
 	path = os.path.join(app.root_path, 'static/images')
