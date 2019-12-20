@@ -4,10 +4,8 @@
     <h3>Your Image</h3>
     <img src="{{img_path}}" alt="Error Loading Image">
     <h3>Detected Number Plate</h3>
-    {% for license_plate in license_plate_lst %}
+    {% for license_plate,text in zip(license_plate_lst, text_lst) %}
     	<img src="{{license_plate}}" alt="Error Loading Image">
-    {% endfor %}
-    {% for text in text_lst %}
     	<h3>Image to Text: {{text}}</h3>
     {% endfor %}
 {% endblock content %}

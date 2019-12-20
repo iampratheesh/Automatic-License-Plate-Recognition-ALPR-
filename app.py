@@ -12,6 +12,7 @@ import secrets
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.jinja_env.globals.update(zip=zip)
 
 options = {
 	'model': 'cfg/tiny-yolo-voc-1c.cfg',
