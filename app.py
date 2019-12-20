@@ -1,4 +1,4 @@
-import os
+import os, shutil
 from flask import Flask
 from flask import render_template, url_for, redirect
 from flask_forms.forms import ImageForm
@@ -43,7 +43,18 @@ def save_output(image_array):
 	picture_path = os.path.join(app.root_path, 'static/output', picture_fn)
 	PIL_image.save(picture_path , 'PNG')
 	return picture_fn
-	
+
+def remove_files(path):
+	for filename in os.listdir(path):
+	    file_path = os.path.join(path, filename)
+	    try:
+	        if os.path.isfile(file_path) or os.path.islink(file_path):
+	            os.unlink(file_path)
+	        elif os.path.isdir(file_path):
+	            shutil.rmtree(file_path)
+	    except Exception as e:
+	        print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 @app.route('/', methods = ['GET','POST'])
 def home():
 	form = ImageForm()
@@ -84,6 +95,10 @@ def home():
 			print(text)
 
 			return render_template('output.html', img=img_path, license_plate=license_plate_path, text=text)
+	path = os.path.join(app.root_path, 'static/output')
+	remove_files(path)
+	path = os.path.join(app.root_path, 'static/images')
+	remove_files(path)
 	return render_template('index.html', form=form)
 
 if __name__ == '__main__':
